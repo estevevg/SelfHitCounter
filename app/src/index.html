@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>HitCounter GUI</title>
+<script type="text/javascript" src="javascript.js"></script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <table id="table"><tr><td>..loading..</td></tr></table>
+    <script language="javascript">
+        var example_data = [
+            {
+                "name": "Fase 1",
+                "h-now": 0,
+                "h-pb": 1,
+                "h-diff": "0 (1)",
+                "t-now": "0",
+                "t-pb": "1:00"
+            }
+        ]
+
+        function updateData(data) {
+            var tbl = document.getElementById('table');
+            var new_tbl = "";
+            var majorclass = ('major dark');
+            var hit_cols = 0;
+	        var max_cols = 1;
+
+            // Header
+            new_tbl += '<tr><td class="' + majorclass + ' top" colspan="' + max_cols + '" >Run # ' + 1 + '</td></tr>';
+            new_tbl += '<tr>' +
+                '<td class="' + majorclass + ' left">Split (' + 10 + ' / ' + 20 + ')</td>' +
+                '<td class="' + majorclass + '" width="30px"> Now </td>' +
+                '<td class="' + majorclass + '" width="30px">Diff</td>' +
+                '<td class="' + majorclass + '">PB</td>' +
+                '<td class="' + majorclass + ' right" width="110px">Time</td>' +
+                '<td class="' + majorclass + ' right" width="90px">Delta</td>' +
+                '<td class="' + majorclass + ' right" width="110px">PB</td>' +
+                '<td class="' + majorclass + '" width="22px">&nbsp</td>' +
+                '</tr>';
+
+            // Progress bar
+            if (false) {
+                var percentage = 0;
+                var percentage_sum = 0;
+
+                // fill start
+                if (0 < splits.length) percentage = 100 / splits.length;
+                new_tbl += '<tr><td class="' + majorclass + ' progress_cell" colspan="' + max_cols + '">' +
+                        '<table class="progress"><tr>';
+
+                // fill splits
+                for ( i = 0 ; (i < splits.length) && (i <= d.split_last) ; i = i + 1 )
+                {
+                    s = splits[i];
+
+                    if (d.split_active == i) // place a spacer for the current split
+                    {
+                        new_tbl += '<td class="progress_spacer"> </td>';
+                    }
+                    else if (s.reached && (s.run_id != 0)) // display only up to reached split and skip history split (run_id=0)
+                    {
+                        percentage_sum += percentage;
+                        new_tbl += '<td class="progress_' + (d.progress_bar_colored ? s.class_hits_color : 'better') +'" width="' + percentage + '%"></td>';
+                    }
+                }
+
+                // fill end
+                new_tbl += (percentage_sum < 99 ? '<td class="progress_open"></td>' : '') +
+                            '</tr></table>' +
+                '</td></tr>';
+            }
+            for(let d in data) {
+                
+            }
+
+            tbl.innerHTML = new_tbl;
+
+        }
+
+        updateData(example_data)
+    </script>
+</body>
+</html>
