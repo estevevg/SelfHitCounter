@@ -1,0 +1,8 @@
+pyyaml
+mypy
+types-PyYAML
+flake8
+black
+isort==4.3
+tabulate
+types-tabulate
