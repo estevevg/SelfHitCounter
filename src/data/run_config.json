@@ -1,35 +1,35 @@
 {
-  "run": 12,
-  "current_slice": 2,
+  "run": 1,
+  "current_slice": 0,
   "splits": [
     {
       "name": "Great Plat\u00f3",
-      "hits": 0,
-      "time": 25
+      "hits": 100,
+      "time": 3600
     },
     {
       "name": "Cam\u00ed a la perdici\u00f3",
-      "hits": 0,
-      "time": 30
+      "hits": 100,
+      "time": 3600
     },
     {
       "name": "Phasmophobia",
-      "hits": 0,
-      "time": 0
+      "hits": 100,
+      "time": 3600
     },
     {
       "name": "A buscar birres",
-      "hits": 0,
+      "hits": 100,
       "time": 3600
     },
     {
       "name": "Els dalton",
-      "hits": 0,
+      "hits": 100,
       "time": 3600
     },
     {
       "name": "The carry!",
-      "hits": 3,
+      "hits": 100,
       "time": 3600
     }
   ]

@@ -19,7 +19,7 @@
 	        var max_cols = 1;
 
             // Header
-            new_tbl += '<tr><td class="' + majorclass + ' top" colspan="' + max_cols + '" >Run # ' + 1 + '</td></tr>';
+            new_tbl += '<tr><td class="' + majorclass + ' top" colspan="' + max_cols + '" >Run # ' + data.run + '</td></tr>';
             new_tbl += '<tr>' +
                 '<td class="' + majorclass + ' left">Split (' + data.current_slice + ' / ' + data.slices.length + ')</td>' +
                 '<td class="' + majorclass + '" width="30px"> Now </td>' +
@@ -92,7 +92,16 @@
                             console.log(row)
                 new_tbl += row
             }
-            
+            let total_hits_class = (data.total.slice_hits - data.total.pb_hits <= 0 ? 'better' : 'worse');
+            new_tbl += '<tr>' +
+                        '<td class="' + majorclass + ' bottom ' + total_hits_class + ' left">Total:</td>'                                                     + // Total
+                        '<td class="' + majorclass + ' bottom ' + total_hits_class + '">' + data.total.slice_hits  + '</td>' + // Sum of Now
+                        '<td class="' + majorclass + ' bottom ' + total_hits_class + '">' + (data.total.slice_hits - data.total.pb_hits) + '</td>'  + // Diff
+                        '<td class="' + majorclass + ' bottom ' + total_hits_class + '">' + data.total.pb_hits + '</td>' + // Sum of Way
+                        '<td class="' + majorclass + ' bottom ' + total_hits_class + '">' + printTime(data.total.slice_time) + '</td>' + // Sum time
+                        '<td class="' + majorclass + ' bottom ' + total_hits_class + '">' + printTime(data.total.pb_time - data.total.slice_time) + '</td>' + // Sum of Diff 
+                        '<td class="' + majorclass + ' bottom ' + total_hits_class + '">' + printTime(data.total.pb_time) + '</td>' + // Sum of Diff 
+                        '</tr>';
 
             tbl.innerHTML = new_tbl;
 
