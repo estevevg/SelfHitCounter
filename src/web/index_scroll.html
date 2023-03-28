@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>HitCounter GUI</title>
+<script type="text/javascript" src="javascript.js"></script>
+<link rel="stylesheet" href="styles.css">
+<meta http-equiv="refresh" content="30">
+</head>
+<body>
+    <table id="table" class="dark"><tr><td>..loading..</td></tr></table>
+    <script language="javascript">
+        var LINES = 6;
+        var example_data = {"run": 0, "slices": [{"name": "Great Plat\u00f3", "hits": 3, "time": -3}, {"name": "Cam\u00ed a la perdici\u00f3", "hits": 3, "time": -7}, {"name": "Phasmophobia", "hits": 0, "time": -8}, {"name": "A buscar birres", "hits": 0, "time": 0}, {"name": "Els dalton", "hits": 0, "time": 0}, {"name": "The carry!", "hits": 0, "time": 0}], "pb_slices": [{"name": "Great Plat\u00f3", "hits": 0, "time": 0}, {"name": "Cam\u00ed a la perdici\u00f3", "hits": 0, "time": 0}, {"name": "Phasmophobia", "hits": 0, "time": 0}, {"name": "A buscar birres", "hits": 0, "time": 0}, {"name": "Els dalton", "hits": 0, "time": 0}, {"name": "The carry!", "hits": 0, "time": 0}], "current_slice": 3, "init_time": 1652118458.137826};
+
+        function updateData(data) {
+            var tbl = document.getElementById('table');
+            var new_tbl = "";
+            var majorclass = ('major dark');
+            var hit_cols = 0;
+	        var max_cols = 1;
+
+            // Header
+            new_tbl += '<tr><td class="' + majorclass + ' top" colspan="' + max_cols + '" >Run # ' + data.run + '</td></tr>';
+            new_tbl += '<tr>' +
+                '<td class="' + majorclass + ' left">Split (' + data.current_slice + ' / ' + data.slices.length + ')</td>' +
+                '<td class="' + majorclass + '" width="30px"> Now </td>' +
+                '<td class="' + majorclass + '" width="30px">Diff</td>' +
+                '<td class="' + majorclass + '">PB</td>' +
+                '<td class="' + majorclass + ' right" width="110px">Time</td>' +
+                '<td class="' + majorclass + ' right" width="90px">Delta</td>' +
+                '<td class="' + majorclass + ' right" width="110px">PB</td>' +
+                '<td class="' + majorclass + '" width="22px">&nbsp</td>' +
+                '</tr>';
+
+            // ------------------------------------------------------------------------------------
+            // ----------------------------------- Progress Bar -----------------------------------
+            var percentage = 0;
+            var percentage_sum = 0;
+
+            // fill start
+            if (0 < data.slices.length) percentage = 100 / data.slices.length;
+            new_tbl += '<tr><td class="' + majorclass + ' progress_cell" colspan="' + max_cols + '">' +
+                    '<table class="progress"><tr>';
+
+            // fill slices
+            for ( i = 0 ; (i < data.slices.length) ; i++) {
+                s = data.slices[i];
+
+                if (i == data.current_slice) // place a spacer for the current split
+                {
+                    new_tbl += '<td class="progress_spacer"> </td>';
+                }
+                else if (i < data.current_slice) // display only up to reached split and skip history split (run_id=0)
+                {
+                    percentage_sum += percentage;
+                    let color = s.hits > 0 ? "worse" : "better"
+                    new_tbl += '<td class="progress_' + color +'" width="' + percentage + '%"></td>';
+                }
+            }
+
+            // fill end
+            new_tbl += (percentage_sum < 99 ? '<td class="progress_open"></td>' : '') +
+                        '</tr></table>' +
+            '</td></tr>';
+
+            let hits_blank;
+            let comulative_time_duration_str = 0;
+            let comulative_time_diff_str = 0;
+            let empty_str = "-";
+            var init = Math.min(data.current_slice - LINES/2 < 0 ? 0 : data.current_slice - LINES/2, data.slices.length - LINES)
+            var end = Math.min(data.slices.length, data.current_slice + LINES/2 < LINES ? LINES : data.current_slice + LINES/2)
+            // if( init > 0) {
+            //     new_tbl +=  '<tr class="even">' +
+            //                     '<td class="left"> -'  + init +'</td><td>splits</td><td></td><td></td><td></td><td></td><td></td><td></td>'  + // Split
+                                
+            //                 '</tr>';
+            // }
+            for(let i=init; i<end; i++) {
+                console.log(data.slices[i])
+                let bottom_class;
+                let s = data.slices[i];
+                let pb = data.pb_slices[i]
+
+                highlight_class = data.current_slice == i ? ' highlight' : '';
+                bottom_class = ''; // no footer? care about last row
+                hits_blank = false;
+                //comulative_time_duration_str = (s.reached ? IntToTimeStr(s.comulative_time, false) : DiffToTimeStr(s.duration, false)); // absolute time up to current split, afterwards show duration instead
+                //comulative_time_diff_str = (s.reached ? DiffToTimeStr(s.comulative_time - s.comulative_time_pb, true) : DiffToTimeStr(s.duration - s.duration_pb, true));
+                
+                // generate actual split table entry
+                let row =  '<tr class="' + (data.current_slice == i ? 'current' : (i%2==0 ? 'even' : 'odd')) + '">' +
+                            '<td class="' +  highlight_class + ' left">'  + (i+1) + ' - '+ s.name  + '</td>'  + // Split
+                            '<td class="' + highlight_class + '">' + ((data.current_slice < i) ? "-" : s.hits) + '</td>' + // Now
+                            '<td class="' + highlight_class +  '">' + ((data.current_slice < i) ? "-" : (pb.hits - s.hits)) + '</td>'+   // Diff
+                            '<td class="' + highlight_class + '">' + pb.hits  + '</td>' + // PB
+                            '<td class="' + highlight_class + ' right">' + ((data.current_slice <= i) ? "-" : printTime(s.time)) + '</td>' + // Time
+                            '<td class="' + highlight_class + ' right">' + ((data.current_slice <= i) ? "-" : printTime(pb.time - s.time)) + '</td>' + // Diff (Time)
+                            '<td class="' + highlight_class + ' right">' + printTime(pb.time) + '</td>' + // PB (Time)
+                            '<td class="' + highlight_class +  '">'+ '&nbsp;' + '</td>' + // Star
+                            '</tr>';
+                            console.log(row)
+                new_tbl += row
+            }
+            let total_hits_class = (data.total.slice_hits - data.total.pb_hits <= 0 ? 'better' : 'worse');
+            new_tbl += '<tr>' +
+                        '<td class="' + majorclass + ' bottom ' + total_hits_class + ' left">Total:</td>'                                                     + // Total
+                        '<td class="' + majorclass + ' bottom ' + total_hits_class + '">' + data.total.slice_hits  + '</td>' + // Sum of Now
+                        '<td class="' + majorclass + ' bottom ' + total_hits_class + '">' + (data.total.slice_hits - data.total.pb_hits) + '</td>'  + // Diff
+                        '<td class="' + majorclass + ' bottom ' + total_hits_class + '">' + data.total.pb_hits + '</td>' + // Sum of Way
+                        '<td class="' + majorclass + ' bottom ' + total_hits_class + '">' + printTime(data.total.slice_time) + '</td>' + // Sum time
+                        '<td class="' + majorclass + ' bottom ' + total_hits_class + '">' + printTime(data.total.pb_time - data.total.slice_time) + '</td>' + // Sum of Diff 
+                        '<td class="' + majorclass + ' bottom ' + total_hits_class + '">' + printTime(data.total.pb_time) + '</td>' + // Sum of Diff 
+                        '</tr>';
+
+            tbl.innerHTML = new_tbl;
+
+        }
+
+        function printTime(time) {
+            seconds = Math.round(time % 60);
+            minutes = Math.round(time / 60);
+            return minutes+":"+seconds
+        }
+
+        function readTextFile(file) {
+            var rawFile = new XMLHttpRequest();
+            rawFile.open("GET", file, false);
+            rawFile.onreadystatechange = function ()
+            {
+                if(rawFile.readyState === 4)
+                {
+                    if(rawFile.status === 200 || rawFile.status == 0)
+                    {
+                        var allText = rawFile.responseText;
+                        updateData(JSON.parse(allText));
+                    }
+                }
+            }
+            rawFile.send(null);
+        }
+
+        function checkStatus() {
+            setTimeout(function () {
+                readTextFile('../data/state.json')
+            }, 1000);
+        }
+        // while(true){
+        //     checkStatus()
+        // }
+        readTextFile('../data/state.json')
+        //updateData(example_data)
+        window.setTimeout( function() {
+            //readTextFile('../data/state.json')
+            window.location.reload();
+        }, 5000);
+    </script>
+</body>
+</html>
